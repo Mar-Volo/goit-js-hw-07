@@ -18,23 +18,31 @@ const mainGallery = galleryItems
   .join("");
 gallery.innerHTML = mainGallery;
 gallery.addEventListener("click", onclick);
+const instance = basicLightbox.create(
+  `
+    <img class="modal-img" src="">
+`,
+  {
+    onShow: (instance) => {
+      window.addEventListener("keydown", escape);
+    },
+    onClose: (instance) => {
+      window.removeEventListener("keydown", escape);
+    },
+  }
+);
 
 function onclick(e) {
   e.preventDefault();
   if (e.target.nodeName !== "IMG") {
     return;
   }
-  const instance = basicLightbox.create(`
-    <img src= ${e.target.dataset.source} source= ${e.target.src}>
-`);
-
+  instance.element().querySelector("img").src = e.target.dataset.source;
   instance.show();
-  document.addEventListener("keydown", escape);
-  function escape(e) {
-    if (e.code === "Escape") {
-      instance.close();
-      document.removeEventListener("keydown", escape);
-    }
+}
+function escape(e) {
+  if (e.key === "Escape") {
+    instance.close();
+    return;
   }
 }
-
